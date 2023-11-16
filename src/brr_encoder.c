@@ -184,42 +184,42 @@ static Sample *resample(Sample *samples, size_t samples_length, size_t out_lengt
 
 	switch(type) {
 	case 'n':								//No interpolation
-		for(int i=0; i<out_length; ++i)
+		for(size_t i=0; i<out_length; ++i)
 		{
 			out[i] = samples[(int)floor(i*ratio)];
 		}
 		break;
 	case 'l':								//Linear interpolation
-		for(int i=0; i<out_length; ++i)
+		for(size_t i=0; i<out_length; ++i)
 		{
 			int a = (int)(i*ratio);		//Whole part of index
 			double b = i*ratio-a;		//Fractional part of index
-			if((a+1)==samples_length)
+			if((a+1)==(int)samples_length)
 				out[i] = samples[a];	//This used only for the last sample
 			else
 				out[i] = (1-b)*samples[a]+b*samples[a+1];
 		}
 		break;
 	case 's':								//Sine interpolation
-		for(int i=0; i<out_length; ++i)
+		for(size_t i=0; i<out_length; ++i)
 		{
 			int a = (int)(i*ratio);
 			double b = i*ratio-a;
 			double c = (1.0-cos(b*PI))/2.0;
-			if((a+1)==samples_length)
+			if((a+1)==(int)samples_length)
 				out[i] = samples[a];	//This used only for the last sample
 			else out[i] = (1-c)*samples[a]+c*samples[a+1];
 		}
 		break;
 	case 'c':										//Cubic interpolation
-		for(int i=0; i<out_length; ++i)
+		for(size_t i=0; i<out_length; ++i)
 		{
 			int a = (int)(i*ratio);
 
 			short s0 = (a == 0) ? samples[0] : samples[a-1];
 			short s1 = samples[a];
-			short s2 = (a+1 >= samples_length) ? samples[samples_length-1] : samples[a+1];
-			short s3 = (a+2 >= samples_length) ? samples[samples_length-1] : samples[a+2];
+			short s2 = (a+1 >= (int)samples_length) ? samples[samples_length-1] : samples[a+1];
+			short s3 = (a+2 >= (int)samples_length) ? samples[samples_length-1] : samples[a+2];
 
 			double a0 = s3-s2-s0+s1;
 			double a1 = s0-s1-a0;
@@ -244,12 +244,12 @@ static Sample *resample(Sample *samples, size_t samples_length, size_t out_lengt
 				fir_coefs[k] = sinc(k/ratio)/ratio;
 
 			// Apply FIR filter to samples
-			for(int i=0; i<samples_length; ++i)
+			for(int i=0; i<(int)samples_length; ++i)
 			{
 				double acc = samples[i] * fir_coefs[0];
 				for(int k=FIR_ORDER; k>0; --k)
 				{
-					acc += fir_coefs[k] * ((i+k < samples_length) ? samples[i+k] : samples[samples_length-1]);
+					acc += fir_coefs[k] * ((i+k < (int)samples_length) ? samples[i+k] : samples[samples_length-1]);
 					acc += fir_coefs[k] * ((i-k >= 0) ? samples[i-k] : samples[0]);
 				}
 				samples_antialiased[i] = (Sample)acc;
@@ -259,7 +259,7 @@ static Sample *resample(Sample *samples, size_t samples_length, size_t out_lengt
 			samples = samples_antialiased;
 		}
 		// Actual resampling using sinc interpolation
-		for(int i=0; i<out_length; ++i)
+		for(int i=0; i<(int)out_length; ++i)
 		{
 			double a = i*ratio;
 			double acc = 0.0;
@@ -267,7 +267,7 @@ static Sample *resample(Sample *samples, size_t samples_length, size_t out_lengt
 			{
 				Sample sample;
 				if(j >=0)
-					if(j < samples_length)
+					if(j < (int)samples_length)
 						sample = samples[j];
 					else
 						sample = samples[samples_length-1];
@@ -295,12 +295,12 @@ static Sample *treble_boost_filter(Sample *samples, size_t length)
 	const double coefs[8] = {0.912962, -0.16199, -0.0153283, 0.0426783, -0.0372004, 0.023436, -0.0105816, 0.00250474};
 
 	Sample *out = safe_malloc(length * WIDTH);
-	for(int i=0; i<length; ++i)
+	for(int i=0; i<(int)length; ++i)
 	{
 		double acc = samples[i] * coefs[0];
 		for(int k=7; k>0; --k)
 		{
-			acc += coefs[k] * ((i+k < length) ? samples[i+k] : samples[length-1]);
+			acc += coefs[k] * ((i+k < (int)length) ? samples[i+k] : samples[length-1]);
 			acc += coefs[k] * ((i-k >= 0) ? samples[i-k] : samples[0]);
 		}
 		out[i] = acc;
@@ -335,7 +335,7 @@ int main(const int argc, char *const argv[])
 				FIRen[1] = false;
 				FIRen[2] = false;
 				FIRen[3] = false;
-				for(int i=0; i < strlen(optarg); ++i)
+				for(size_t i=0; i < strlen(optarg); ++i)
 				{
 					switch(optarg[i])
 					{
@@ -504,7 +504,7 @@ int main(const int argc, char *const argv[])
 	{
 		signed int sample;
 		case 8 :
-			for(int i=0; i < samples_length; ++i)
+			for(size_t i=0; i < samples_length; ++i)
 			{
 				unsigned char in8_chns[hdr.chans];
 				fread(in8_chns, 1, hdr.chans, inwav);	// Read single sample on CHANS channels at a time
@@ -516,7 +516,7 @@ int main(const int argc, char *const argv[])
 			break;
 
 		case 16 :
-			for(int i=0; i < samples_length; ++i)
+			for(size_t i=0; i < samples_length; ++i)
 			{
 				signed short in16_chns[hdr.chans];
 				fread(in16_chns, 2, hdr.chans, inwav);
@@ -604,7 +604,7 @@ int main(const int argc, char *const argv[])
 	}
 	p1 = 0;
 	p2 = 0;
-	for (int n=0; n<samples_length; n+=16)
+	for (size_t n=0; n<samples_length; n+=16)
 	{
 		//Clear BRR buffer
 		memset(BRR, 0, 9);
