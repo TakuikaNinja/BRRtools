@@ -37,23 +37,22 @@ int main(const int argc, char *const argv[])
 	int c;
 	while ((c = getopt(argc, argv, "n:f:l:s:m:g")) != -1)
 	{
-		int arg = atoi(optarg);
 		switch(c)
 		{
 			case 'n':
-				loopcount = arg;
+				loopcount = atoi(optarg);
 				break;
 
 			case 'f':
-				firstsample = arg;
+				firstsample = atoi(optarg);
 				break;
 
 			case 'l':
-				lastsample = arg;
+				lastsample = atoi(optarg);
 				break;
 
 			case 's':
-				samplerate = arg;
+				samplerate = atoi(optarg);
 				break;
 
 			case 'm':

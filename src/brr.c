@@ -67,8 +67,7 @@ void generate_wave_file(FILE *outwav, unsigned int samplerate, pcm_t *buffer, si
 	{
 		char chunk_ID[4];				// Should be 'RIFF'
 		u32 chunk_size;
-		char wave_str[4];				// Should be 'WAVE'
-		char sc1_id[4];					// Should be 'fmt '
+		char wave_str[8];				// Should be 'WAVEfmt '
 		u32 sc1size;					// Should be at least 16
 		u16 audio_format;				// Should be 1 for PCM
 		u16 chans;						// 1 for mono, 2 for stereo, etc...
@@ -83,8 +82,7 @@ void generate_wave_file(FILE *outwav, unsigned int samplerate, pcm_t *buffer, si
 	{
 		.chunk_ID = "RIFF",
 		.chunk_size = 32*k + 36,
-		.wave_str = "WAVE",
-		.sc1_id = "fmt ",
+		.wave_str = "WAVEfmt ",
 		.sc1size = 16,				//Size of header
 		.audio_format = 1,			//PCM format, no compression
 		.chans = 1,					//Mono
