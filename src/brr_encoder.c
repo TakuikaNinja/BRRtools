@@ -432,13 +432,13 @@ int main(const int argc, char *const argv[])
 	}
 
 	// Read "RIFF" word
-	if(strncmp(hdr.chunk_ID, "RIFF", 4))
+	if(memcmp(hdr.chunk_ID, "RIFF", 4))
 	{
 		fprintf(stderr, "Error : Input file in unsupported format : \"RIFF\" block missing.\n");
 		exit(1);
 	}
 	// "WAVEfmt" letters
-	if(strncmp(hdr.wave_str, "WAVEfmt ", 8))
+	if(memcmp(hdr.wave_str, "WAVEfmt ", 8))
 	{
 		fprintf(stderr, "Input file in unsupported format : \"WAVEfmt\" block missing !\n");
 		exit(1);
@@ -484,7 +484,7 @@ int main(const int argc, char *const argv[])
 			fprintf(stderr, "End of file reached without finding a \"data\" chunk.\n");
 			exit(1);
 		}
-		if(strncmp(sub_hdr.name, "data", 4))			// If there is anyother non-"data" block, skip it
+		if(memcmp(sub_hdr.name, "data", 4))			// If there is anyother non-"data" block, skip it
 			fseek(inwav, sub_hdr.size, SEEK_CUR);
 		else
 			break;
