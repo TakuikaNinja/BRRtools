@@ -27,7 +27,7 @@ static void print_instructions()
 
 int main(const int argc, char *const argv[])
 {
-	int looppos=0, loopcount=1, firstsample=0, lastsample=0, samplerate = 32000, looptimes;
+	unsigned int looppos=0, loopcount=1, firstsample=0, lastsample=0, samplerate = 32000, looptimes;
 	double min_length = 0.0;
 	bool gaussian_lowpass = false;
 
@@ -112,7 +112,7 @@ int main(const int argc, char *const argv[])
 		}
 		looppos=(loop_adr-sample_adr)/9;							//Number of BRR blocks before loop
 
-		int flags, blockamount = 0;
+		unsigned int flags, blockamount = 0;
 		do
 		{	//Compute the number of block before end of sample
 			fseek(inspc, sample_adr + 9*blockamount + 0x100, SEEK_SET);
@@ -141,17 +141,17 @@ int main(const int argc, char *const argv[])
 
 			//Read the start of the sample before loop point
 			fseek(inspc, sample_adr + 0x100, SEEK_SET);
-			for(int i=0; i<looppos; ++i)
+			for(unsigned int i=0; i<looppos; ++i)
 			{
 				fread(BRR, 1, 9, inspc);			//Read a BRR block
 				decodeBRR(buf_ptr);					//Append 16 BRR samples to existing array
 				buf_ptr += 16;
 			}
 
-			for(int j=0; j<looptimes; ++j)
+			for(unsigned int j=0; j<looptimes; ++j)
 			{
 				fseek(inspc, sample_adr + 9*looppos + 0x100, SEEK_SET);
-				for(int i=looppos; i<blockamount; ++i)
+				for(unsigned int i=looppos; i<blockamount; ++i)
 				{
 					fread(BRR, 1, 9, inspc);
 					decodeBRR(buf_ptr);
@@ -178,7 +178,7 @@ int main(const int argc, char *const argv[])
 			pcm_t *buf_ptr = samples;
 
 			fseek(inspc, sample_adr + 0x100, SEEK_SET);
-			for(int k=0; k<blockamount; k++)
+			for(unsigned int k=0; k<blockamount; k++)
 			{
 				fread(BRR, 1, 9, inspc);
 				decodeBRR(buf_ptr);
