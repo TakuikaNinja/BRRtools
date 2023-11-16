@@ -1,5 +1,5 @@
 CC		:= gcc
-FLAGS	:= --std=c99 -Wall -O3
+FLAGS	:= --std=c99 -Wall -Wextra -O3
 SRC		:= src
 BIN		:= bin
 BUILD	:= .build
